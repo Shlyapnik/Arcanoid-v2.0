@@ -5,9 +5,6 @@ import game_functions as gf
 from pygame.sprite import Group, GroupSingle, groupcollide
 from class_arg import Arg
 from settings import Settings
-from items import Block, Ball, Platform
-from game_area import Game_area
-from label import Label
 
 
 
@@ -24,15 +21,23 @@ def run_game():
     gf.init(arg)
 
     #pygame.time.set_timer(pygame.USEREVENT, 1000//20)
+    
+    #arg.timemanager.sing_up("before all", "after all", "check + update + blit")
+    #arg.timemanager.sing_up("be print", "af ", "")
+
     arg.timer = [0 for i in range(2)]
     while True:
-        gf.safe_before_iter(arg)
-
+        arg.timemanager.write_down("be all")
         gf.check_events(arg)
+        arg.timemanager.write_down("af ch_ev")
         gf.update_state(arg)
+        arg.timemanager.write_down("af up_state")
         gf.update_screen(arg)
+        arg.timemanager.write_down("af bliting")
+        arg.timemanager.update_sing_ups()
+        arg.timemanager.write_down("af up_sing_ups")
 
-        gf.calc_after_iter(arg)
+        # gf.print_debug(arg)
 
 if __name__ == '__main__':
     run_game()

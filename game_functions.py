@@ -3,6 +3,7 @@ import pygame
 import math
 import time
 
+from utilites import Timemanager
 from pygame.sprite import Group, groupcollide, spritecollide
 from menu import Menu
 from items import Block, Ball, Platform
@@ -54,7 +55,7 @@ def check_keydown_menu_events(event, arg):
     cur_menu = arg.menu[arg.id_menu]
 
     if event.key == pygame.K_ESCAPE:
-        arg.menu[arg.id_menu].func_for_escape(arg)
+        cur_menu.func_for_escape(arg)
     if event.key == pygame.K_UP and cur_menu.n_selected != 0:
         cur_menu.n_selected -= 1
     if event.key == pygame.K_DOWN and cur_menu.n_selected != len(cur_menu.buttons) - 1:
@@ -194,6 +195,15 @@ def init(arg):
     arg.image_name = 'images/new/block_'
     arg.blocks = Group()
 
+    # Создаём Таймменеджер
+    arg.timemanager = Timemanager()
+
+    arg.timemanager.sing_up("be all", "af ch_ev", "check_event")
+    arg.timemanager.sing_up("af ch_ev", "af up_state", "update_state")
+    arg.timemanager.sing_up("af up_state", "af bliting", "bliting")
+    arg.timemanager.sing_up("af bliting", "af up_sing_ups", "update_sing_ups")
+    arg.timemanager.sing_up("be all", "af up_sing_ups", "All")
+
     # Создаём разнообразные панели для вывода резов
     make_tables(arg)
 
@@ -201,7 +211,14 @@ def init(arg):
 def make_tables(arg):
     arg.top_space = 10
     arg.left_space = arg.settings.screen_width - 90
-    arg.fps_score = Label(arg, 'FPS:', lambda: arg.fps_count)
+    arg.fps_score = Label(arg, 'FPS:', lambda: int(
+            
+            1000.0 / max(1, 
+                arg.timemanager.get_sibscriber("All", False, False) / 
+                max(1, arg.timemanager.get_sibscriber("All", False, True))
+            )
+        )
+    )
 
     arg.left_space = arg.settings.screen_width - 220
     arg.speed_score = Label(arg, 'Speed:', lambda: arg.speed_count)
@@ -221,6 +238,8 @@ def make_tables(arg):
 
     arg.top_space, arg.left_space = 10, 200
     arg.time_table = Label(arg, 'Time:', lambda: (pygame.time.get_ticks() - arg.stats.start_time) // 1000)
+
+
 
 
 def make_target_wall(arg):
@@ -388,22 +407,8 @@ def close_game(arg):
     exit()
 
 
-def safe_before_iter(arg):
-    arg.time_before_iter = pygame.time.get_ticks()
-    arg.ball_pos_before_iter = arg.ball.rect.center
-
-
-def calc_after_iter(arg):
-    end_time = pygame.time.get_ticks()
-    end_ball_pos = arg.ball.rect.center
-
-    arg.need_delay = max(int(1000 / arg.settings.fps - (end_time - arg.time_before_iter)), 0)
-    pygame.time.delay(arg.need_delay)
-
-    # Обновляем информационные поля
-    t2 = pygame.time.get_ticks()
-    arg.fps_count = int(1000 / (t2 - arg.time_before_iter))
-
-    v = [end_ball_pos[i] - arg.ball_pos_before_iter[i] for i in range(2)]
-    v_mod = (v[0] ** 2 + v[1] ** 2) ** 0.5
-    arg.speed_count = int(v_mod * 1000 / (t2 - arg.time_before_iter))
+def print_debug(arg):
+    subscribers = ["All", "update_state", "bliting", "update_sing_ups"]
+    for subscriber in subscribers:
+        print(subscriber, arg.timemanager.get_sibscriber(subscriber, True), "%")
+    print()

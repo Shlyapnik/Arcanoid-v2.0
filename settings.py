@@ -25,4 +25,4 @@ class Settings:
         self.v_platform = 14
         self.ball_velocity = 14
 
-        self.fps = 200
+        self.fps = 20

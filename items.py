@@ -93,22 +93,17 @@ class Platform(Item):
         self.velocity = arg.settings.v_platform
 
     def update(self, arg):
-        # point = gf.collide_circle_rect(arg.ball, self)
-        # if point != [0, 0] and self.rect.top < arg.ball.center[1] < self.rect.bottom:
-        #     a = point[0] - self.center[0]
-        #     if a > 0:
-        #         self.center[0] = arg.ball.center[0] - arg.ball.radius - self.rect.width/2
-        #     else:
-        #         self.center[0] = arg.ball.center[0] + arg.ball.radius + self.rect.width/2
 
+
+        # Нужно переработать
         if self.moving_right:
             self.center[0] += self.velocity
             if gf.collide_circle_rect(arg.ball, self) != [0, 0]:
-                self.center[0] -= self.velocity * arg.time
+                self.center[0] -= self.velocity
         if self.moving_left:
             self.center[0] -= self.velocity
             if gf.collide_circle_rect(arg.ball, self) != [0, 0]:
-                self.center[0] += self.velocity * arg.time
+                self.center[0] += self.velocity 
 
         self.rect.centerx = self.center[0]
         if self.rect.left < 0:

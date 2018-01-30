@@ -15,6 +15,7 @@ class Arg:
         self.collided = False
 
         self.time = 1
+        self.timer = None
         self.speed_count = 0
         self.fps_count = 0
 
@@ -27,7 +28,9 @@ class Arg:
         self.menu_width = 300
         self.menu_height = 300
 
-        # Меню с номером ноль это начальное меню (ещё нет но через десяток строк появится)
+        # Меню с номером 0 это начальное меню 
+        # Меню с номером 1 это меню во время паузы игры
+        # Меню с номером 2 это меню настроек
         self.id_menu = 0
         self.prev_id_menu = 0
         self.state_flag = MenuS
