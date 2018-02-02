@@ -177,8 +177,8 @@ class Ball(Item):
             self.rect.centerx = arg.platform.rect.centerx
             self.center = list(map(float, [self.rect.centerx, self.rect.centery]))
         else:
-            self.center[0] += self.velocity[0] * self.alpha_velocity * arg.time
-            self.center[1] += self.velocity[1] * self.alpha_velocity * arg.time
+            self.center[0] += self.velocity[0] * self.alpha_velocity
+            self.center[1] += self.velocity[1] * self.alpha_velocity
 
 
         # Обрабатываем пересечение с платформой
@@ -229,7 +229,7 @@ class Ball(Item):
                 arg.stats.add(arg.stats.reward)
                 arg.blocks.remove(block)
                 if len(arg.blocks) == 0:
-                    gf.next_level(arg)
+                    arg.next_level(arg)
                 break
 
         # Обрабатываем пересечение с границами поля
@@ -247,16 +247,17 @@ class Ball(Item):
             self.center[1] = float(self.rect.centery)
             self.velocity[1] *= -1
         if self.rect.top >= self.screen_rect.height:
-            arg.stats.lives -= 1
-            if arg.stats.lives != 0:
-                self.restart()
-                return
-            else:
-                gf.wasted(arg)
-                return
-        if self.rect.centery+2 >= arg.platform.rect.centery:
-            self.velocity = [0, 1]
-            return
+            arg.wasted(arg)
+            # arg.stats.lives -= 1
+            # if arg.stats.lives != 0:
+            #     self.restart()
+            #     return
+            # else:
+            #     gf.wasted(arg)
+            #     return
+        # if self.rect.centery+2 >= arg.platform.rect.centery:
+        #     self.velocity = [0, 1]
+        #     return
 
     def throw(self):
         if not self.thrown:

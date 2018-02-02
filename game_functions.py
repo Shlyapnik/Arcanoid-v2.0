@@ -2,6 +2,7 @@ import sys
 import pygame
 import math
 import time
+import random
 
 from utilites import Timemanager
 from pygame.sprite import Group, groupcollide, spritecollide
@@ -17,6 +18,7 @@ from population import Population
 from button import Button
 from check_box import Check_box_button, Check_box
 
+from unit_tests import get_tests
 
 
 def check_keydown_game_events(event, arg):
@@ -182,6 +184,8 @@ def init(arg):
 
     arg.menu.append(make_settings_menu(arg))
 
+    arg.menu.append(make_unit_test_menu(arg))
+
     # Создаём объект платформы
     arg.image_name = 'images/new/platform 120x20.png'
     arg.platform = Platform(arg)
@@ -206,6 +210,10 @@ def init(arg):
 
     # Создаём разнообразные панели для вывода резов
     make_tables(arg)
+
+    # Привязываем конец игры к нужным функциям
+    arg.next_level = next_level
+    arg.wasted = wasted
 
 
 def make_tables(arg):
@@ -355,13 +363,16 @@ def make_settings_menu(arg):
 
 
 def make_welcome_menu(arg):
-    names = ['New Game', 'Load Game', 'Records', 'Settings', 'Exit']
+    names = ['New Game', 'Load Game', 'Unit Tests', 'Settings', 'Exit']
     button_types = [Button, Button, Button, Button, Button]
     buttons_width = [150, 150, 150, 150, 150]
 
     def new_game_c(arg):
         new_game(arg)
         arg.state_flag = GameS
+
+    def unit_test_button(arg):
+        arg.id_menu = 3
 
     def settings_button(arg):
         arg.id_menu = 2
@@ -370,9 +381,38 @@ def make_welcome_menu(arg):
     def empty_func(arg):
         pass
 
-    funcs = [new_game_c, empty_func, empty_func, settings_button, close_game, close_game]
+    funcs = [new_game_c, empty_func, unit_test_button, settings_button, close_game, close_game]
 
     return Menu(arg, button_types, names, buttons_width, funcs)
+
+
+def make_unit_test_menu(arg):
+    tests = get_tests(arg)
+    
+    names = list()
+    button_types = list()
+    buttons_width = list()
+    funcs = list()
+
+    def exit_func(arg):
+        arg.id_menu = 0
+
+    for test in tests:
+        names.append(test.description)
+        button_types.append(Button)
+        buttons_width.append(150)
+        funcs.append(test.load)
+
+    names.append("Back")
+    button_types.append(Button)
+    buttons_width.append(150)
+    funcs.append(exit_func)
+
+    funcs.append(exit_func)
+
+    return Menu(arg, button_types, names, buttons_width, funcs)
+
+
 
 
 def restart(arg):
@@ -396,9 +436,17 @@ def next_level(arg):
 
 def wasted(arg):
     #print('wasted')
+    arg.stats.lives -= 1
+
     if arg.stats.training_flag:
         arg.population.end_game(arg)
-    new_game(arg)
+        new_game(arg)
+    else:
+        if arg.stats.lives == 0:
+            new_game(arg)
+        else:
+            next_level(arg)
+
 
 
 def close_game(arg):
@@ -412,3 +460,13 @@ def print_debug(arg):
     for subscriber in subscribers:
         print(subscriber, arg.timemanager.get_sibscriber(subscriber, True), "%")
     print()
+
+
+def reduce_fps(arg):
+    if random.randint(0, 100) < 5:
+        diff_fps = arg.fps_score.func_text() - arg.settings.fps
+        if diff_fps > 0:
+            diff_fps *= 3
+        arg.additional_time += diff_fps // 2
+    
+    pygame.time.delay(arg.additional_time)

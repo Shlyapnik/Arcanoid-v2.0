@@ -15,6 +15,7 @@ class Arg:
         self.collided = False
 
         self.time = 1
+        self.additional_time = 0
         self.timer = None
         self.speed_count = 0
         self.fps_count = 0

@@ -61,8 +61,8 @@ class Game_area:
             elif arg.stats.bot_activate:
                 arg.bot.move(arg)
 
-            arg.ball.update(arg)
             arg.platform.update(arg)
+            arg.ball.update(arg)
             for block in arg.blocks.sprites():
                 block.update(arg)
         elif arg.state_flag == MenuS:
