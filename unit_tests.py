@@ -1,4 +1,4 @@
-from class_arg import MenuS, GameS
+from enums import MenuS, GameS
 from items import Block
 from pygame.sprite import Group
 

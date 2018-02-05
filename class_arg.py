@@ -1,4 +1,4 @@
-MenuS, GameS = range(2)
+from enums import GameS, MenuS
 
 class Arg:
     def __init__(self):
@@ -6,6 +6,9 @@ class Arg:
         self.game_area = None
         self.stats = None
         self.menu = []
+        self.tm = None
+        self.initer = None
+        
 
         self.bot = None
         self.population = None
@@ -32,6 +35,7 @@ class Arg:
         # Меню с номером 0 это начальное меню 
         # Меню с номером 1 это меню во время паузы игры
         # Меню с номером 2 это меню настроек
+        # Меню с номером 3 это меню юниттестов
         self.id_menu = 0
         self.prev_id_menu = 0
         self.state_flag = MenuS

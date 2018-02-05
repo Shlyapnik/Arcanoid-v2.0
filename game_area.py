@@ -2,8 +2,10 @@ import pygame
 import random
 import time
 
+import collision_functions as cf
+
 from pygame.compat import xrange_
-from class_arg import GameS, MenuS
+from enums import GameS, MenuS
 #from pygame._numpysurfarray import type_name *
 
 class Game_area:
@@ -24,9 +26,20 @@ class Game_area:
 
         self.rail = pygame.image.load('images/new/rail 200x10.png')
 
-    def update_bg(self, arg):
+    def update_gradient(self, arg):
         self.start_color = [min(255, max(self.start_color[i] + self.start_step[i], 0)) for i in range(3)]
         self.end_color = [min(255, max(self.end_color[i] + self.end_step[i], 0)) for i in range(3)]
+
+    def update_background(self, arg):
+        # Изменяем направление градиента
+        self.cnt += 1
+        if self.cnt == 50:
+            self.cnt = 0
+            self.start_step, self.end_step = [[random.randint(-3, 3) for j in range(3)] for i in range(2)]
+            self.stars.append(self.Star(self.screen))
+
+        self.update_gradient(arg)
+        self.update_stars(arg)
 
     def update_stars(self, arg):
         #print(len(self.stars))
@@ -41,30 +54,30 @@ class Game_area:
             elif star.pos[1] - star.radius > self.rect.height:
                 self.stars.remove(star)
 
+    def request_move(self, arg):
+        if arg.stats.training_flag:
+            arg.population.move(arg) 
+        elif arg.stats.bot_activate:
+            arg.bot.move(arg)
+
+    def update_dynamic_objects(self, arg):
+        # Нужно вот здесь реализовывать коллизии
+        
+        
+        pass
+
+        # ----------------------------------------------------------------------------
+        # Please, coding under the line!
+
     def update(self, arg):
         # Обновляем динамический фон
         if arg.stats.visualising_flag:
-            self.cnt += 1
-            if self.cnt == 50:
-                self.cnt = 0
-                self.start_step, self.end_step = [[random.randint(-3, 3) for j in range(3)] for i in range(2)]
-                self.stars.append(self.Star(self.screen))
-
-            self.update_bg(arg)
-            self.update_stars(arg)
+            self.update_background(arg)
 
         # Обновлем Меню либо игровое поле
         if arg.state_flag == GameS:
-            if arg.stats.training_flag:
-                #print("Запрос послан update game_area")
-                arg.population.move(arg)  # Запрос на обновление
-            elif arg.stats.bot_activate:
-                arg.bot.move(arg)
-
-            arg.platform.update(arg)
-            arg.ball.update(arg)
-            for block in arg.blocks.sprites():
-                block.update(arg)
+            self.request_move(arg)
+            self.update_dynamic_objects(arg)
         elif arg.state_flag == MenuS:
             arg.menu[arg.id_menu].update(arg)
 
@@ -86,11 +99,10 @@ class Game_area:
         del ar
 
     def blit_rail(self, arg):
-        rail = pygame.image.load('images/new/rail 200x10.png')
         x_pos = 0
         while(x_pos < arg.settings.screen_width):
-            self.screen.blit(rail, (x_pos, arg.settings.ga_height-rail.get_rect().height+1))
-            x_pos += rail.get_rect().width
+            self.screen.blit(self.rail, (x_pos, arg.settings.ga_height - self.rail.get_rect().height+1))
+            x_pos += self.rail.get_rect().width
 
     def blit(self, arg):
         # Собираем динамический фон

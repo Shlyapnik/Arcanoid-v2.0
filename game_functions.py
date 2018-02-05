@@ -2,23 +2,10 @@ import sys
 import pygame
 import math
 import time
-import random
 
-from utilites import Timemanager
-from pygame.sprite import Group, groupcollide, spritecollide
-from menu import Menu
 from items import Block, Ball, Platform
-from label import Label
-from game_area import Game_area
-from stats import Stats
-from class_arg import MenuS, GameS
+from enums import MenuS, GameS
 
-from population import Population
-
-from button import Button
-from check_box import Check_box_button, Check_box
-
-from unit_tests import get_tests
 
 
 def check_keydown_game_events(event, arg):
@@ -92,6 +79,7 @@ def check_events(arg):
                 check_keyup_menu_events(event, arg)
 
 
+
 def collide_circle_rect(a, b):
     b.rect.centerx, b.rect.centery = b.center
     sol = [0, 0]
@@ -117,7 +105,7 @@ def collide_circle_rect(a, b):
     return sol
 
 
-def update_screen(arg):
+def blit_screen(arg):
     # Выводим стену заднего фона на экран
     arg.screen.blit(arg.wall, arg.wall.get_rect())
 
@@ -148,6 +136,7 @@ def update_state(arg):
     arg.game_area.update(arg)
 
     if arg.state_flag == GameS:
+        arg.tm.write_down("1")
         arg.speed_score.update()
 
         arg.score_table.update()
@@ -155,99 +144,9 @@ def update_state(arg):
         arg.lives_table.update()
         arg.level_table.update()
         arg.time_table.update()
+        arg.tm.write_down("2")
     elif arg.state_flag == MenuS:
         pass
-
-
-def init(arg):
-    # Загружаем стену
-    arg.wall = make_wall('images/break.bmp', arg)
-
-    # Создаём территорию для игры
-    arg.game_area = Game_area(arg)
-
-    # Создаём класс для подсчёта очков
-    arg.stats = Stats(arg)
-    arg.stats.load_prev_session(arg)
-
-    # Создаём популяцию для обучения
-    arg.population = Population(arg)
-    arg.population.load_prev_session(arg)
-
-    # Создаём меню
-    arg.menu_height = 400
-    arg.menu_width = arg.settings.ga_width
-    arg.menu.append(make_welcome_menu(arg))
-
-    arg.menu_height = 200
-    arg.menu.append(make_stop_menu(arg))
-
-    arg.menu.append(make_settings_menu(arg))
-
-    arg.menu.append(make_unit_test_menu(arg))
-
-    # Создаём объект платформы
-    arg.image_name = 'images/new/platform 120x20.png'
-    arg.platform = Platform(arg)
-
-    # Создаём шар для игры
-    arg.radius = 10
-    arg.image_name = 'images/new/ball_aparture 20x20.png'
-    arg.ball = Ball(arg)
-
-    # Создаём блоки для ломания
-    arg.image_name = 'images/new/block_'
-    arg.blocks = Group()
-
-    # Создаём Таймменеджер
-    arg.timemanager = Timemanager()
-
-    arg.timemanager.sing_up("be all", "af ch_ev", "check_event")
-    arg.timemanager.sing_up("af ch_ev", "af up_state", "update_state")
-    arg.timemanager.sing_up("af up_state", "af bliting", "bliting")
-    arg.timemanager.sing_up("af bliting", "af up_sing_ups", "update_sing_ups")
-    arg.timemanager.sing_up("be all", "af up_sing_ups", "All")
-
-    # Создаём разнообразные панели для вывода резов
-    make_tables(arg)
-
-    # Привязываем конец игры к нужным функциям
-    arg.next_level = next_level
-    arg.wasted = wasted
-
-
-def make_tables(arg):
-    arg.top_space = 10
-    arg.left_space = arg.settings.screen_width - 90
-    arg.fps_score = Label(arg, 'FPS:', lambda: int(
-            
-            1000.0 / max(1, 
-                arg.timemanager.get_sibscriber("All", False, False) / 
-                max(1, arg.timemanager.get_sibscriber("All", False, True))
-            )
-        )
-    )
-
-    arg.left_space = arg.settings.screen_width - 220
-    arg.speed_score = Label(arg, 'Speed:', lambda: arg.speed_count)
-
-    arg.left_space = (arg.settings.screen_width - arg.settings.ga_width) // 2
-    arg.top_space = arg.settings.screen_height - arg.settings.ga_height - 32
-    arg.best_score_table = Label(arg, 'Best score:', lambda: int(arg.stats.max_count))
-
-    arg.left_space += arg.settings.ga_width // 2
-    arg.score_table = Label(arg, 'Score:', lambda: int(arg.stats.count))
-
-    arg.left_space, arg.top_space = 10, 10
-    arg.lives_table = Label(arg, 'Lives remain:', lambda: arg.stats.lives)
-
-    arg.top_space += 30
-    arg.level_table = Label(arg, 'Level:', lambda: arg.stats.level)
-
-    arg.top_space, arg.left_space = 10, 200
-    arg.time_table = Label(arg, 'Time:', lambda: (pygame.time.get_ticks() - arg.stats.start_time) // 1000)
-
-
 
 
 def make_target_wall(arg):
@@ -263,155 +162,6 @@ def make_target_wall(arg):
             arg.blocks.add(Block(arg))
 
             x_pos += arg.settings.target_width
-
-
-def make_wall(name, arg):
-    wall = pygame.Surface((arg.settings.screen_width, arg.settings.screen_height))
-    wall.fill(arg.settings.bg_color)
-
-
-    block = pygame.image.load(name).convert_alpha()
-
-    block_rect = block.get_rect()
-    wall_rect = wall.get_rect()
-
-    side_space = (arg.settings.screen_width - arg.settings.ga_width)//2
-    top_space = (arg.settings.screen_height - arg.settings.ga_height)
-    piece_space = 10
-
-    left_half_block = block.subsurface(block_rect.left, block_rect.top, piece_space, block_rect.bottom)
-    right_half_block = block.subsurface(block_rect.right - piece_space, block_rect.top, piece_space, block_rect.bottom)
-
-    y_pos = -(block_rect.height - top_space % block_rect.height)
-    cnt = 0
-    while y_pos < wall_rect.height:
-        if cnt % 2: x_pos = 0
-        else: x_pos = -block_rect.width//2
-
-        while x_pos < wall_rect.width:
-            wall.blit(block, (x_pos, y_pos))
-            x_pos += block_rect.width
-
-        if y_pos >= top_space:
-            wall.blit(right_half_block, (side_space - piece_space, y_pos))
-            wall.blit(left_half_block, (wall_rect.right - side_space, y_pos))
-
-        cnt += 1
-        y_pos += block_rect.height
-
-
-    return wall
-
-
-def make_stop_menu(arg):
-    names = ['Continue', 'Settings', 'Save&Exit']
-    button_types = [Button, Button, Button]
-    buttons_width = [150, 150, 150]
-
-    def continue_game(arg):
-        arg.state_flag = GameS
-
-    def settings_button(arg):
-        arg.id_menu = 2
-        arg.prev_id_menu = 1
-
-    def exit_button(arg):
-        arg.id_menu = 0
-
-    funcs = [continue_game, settings_button, exit_button, continue_game]
-
-    return Menu(arg, button_types, names, buttons_width, funcs)
-
-
-def make_settings_menu(arg):
-    names = ['Cheat Mode', 'Activate bot', 'Activate training', 'Activate visualising']
-    button_types = [Check_box_button, Check_box_button, Check_box_button, Check_box_button]
-    buttons_width = [240, 240, 240, 240]
-
-    def cheat_mode_set(arg, value):
-        arg.stats.cheat_mode = value
-    def cheat_mode_get(arg):
-        return arg.stats.cheat_mode
-
-    def bot_activate_set(arg, value):
-        arg.stats.bot_activate = value
-        if arg.stats.bot_activate:
-            arg.stats.training_flag = False
-            arg.bot = arg.population.get_best()
-    def bot_activate_get(arg):
-        return arg.stats.bot_activate
-
-    def training_set(arg, value):
-        arg.stats.training_flag = value
-        arg.platform.moving_left = False
-        arg.platform.moving_right = False
-    def training_get(arg):
-        return arg.stats.training_flag
-
-    def visualising_set(arg, value):
-        arg.stats.visualising_flag = value
-    def visualising_get(arg):
-        return arg.stats.visualising_flag
-
-    def exit_button(arg):
-        arg.id_menu = arg.prev_id_menu
-
-    funcs = [[cheat_mode_set, cheat_mode_get], [bot_activate_set, bot_activate_get], [training_set, training_get],
-             [visualising_set, visualising_get], exit_button]
-
-    return Menu(arg, button_types, names, buttons_width, funcs)
-
-
-def make_welcome_menu(arg):
-    names = ['New Game', 'Load Game', 'Unit Tests', 'Settings', 'Exit']
-    button_types = [Button, Button, Button, Button, Button]
-    buttons_width = [150, 150, 150, 150, 150]
-
-    def new_game_c(arg):
-        new_game(arg)
-        arg.state_flag = GameS
-
-    def unit_test_button(arg):
-        arg.id_menu = 3
-
-    def settings_button(arg):
-        arg.id_menu = 2
-        arg.prev_id_menu = 0
-
-    def empty_func(arg):
-        pass
-
-    funcs = [new_game_c, empty_func, unit_test_button, settings_button, close_game, close_game]
-
-    return Menu(arg, button_types, names, buttons_width, funcs)
-
-
-def make_unit_test_menu(arg):
-    tests = get_tests(arg)
-    
-    names = list()
-    button_types = list()
-    buttons_width = list()
-    funcs = list()
-
-    def exit_func(arg):
-        arg.id_menu = 0
-
-    for test in tests:
-        names.append(test.description)
-        button_types.append(Button)
-        buttons_width.append(150)
-        funcs.append(test.load)
-
-    names.append("Back")
-    button_types.append(Button)
-    buttons_width.append(150)
-    funcs.append(exit_func)
-
-    funcs.append(exit_func)
-
-    return Menu(arg, button_types, names, buttons_width, funcs)
-
 
 
 
@@ -453,20 +203,3 @@ def close_game(arg):
     arg.stats.save_cur_session(arg)
     arg.population.save_cur_session(arg)
     exit()
-
-
-def print_debug(arg):
-    subscribers = ["All", "update_state", "bliting", "update_sing_ups"]
-    for subscriber in subscribers:
-        print(subscriber, arg.timemanager.get_sibscriber(subscriber, True), "%")
-    print()
-
-
-def reduce_fps(arg):
-    if random.randint(0, 100) < 5:
-        diff_fps = arg.fps_score.func_text() - arg.settings.fps
-        if diff_fps > 0:
-            diff_fps *= 3
-        arg.additional_time += diff_fps // 2
-    
-    pygame.time.delay(arg.additional_time)
