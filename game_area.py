@@ -54,20 +54,47 @@ class Game_area:
             elif star.pos[1] - star.radius > self.rect.height:
                 self.stars.remove(star)
 
+
     def request_move(self, arg):
         if arg.stats.training_flag:
             arg.population.move(arg) 
         elif arg.stats.bot_activate:
             arg.bot.move(arg)
 
+
     def update_dynamic_objects(self, arg):
         # Нужно вот здесь реализовывать коллизии
         
-        
-        pass
+        eps = 0.0001
+        step_alpha = 1.0
+
+        cf.keep_nearest_blocks(arg)
+
+        # Проверяем не можем ли мы сразу шагнуть на единичку
+        if not cf.check_for_coll(arg, 1.0):
+            cf.real_update(arg, 1.0)
+            return
+        else:
+            # Начинаем бинарный поиск
+            while step_alpha > eps:
+                min_alpha, max_alpha = 0.0, step_alpha
+                while max_alpha - min_alpha > eps:
+                    prob_alpha = (max_alpha + min_alpha) / 2
+
+                    if cf.check_for_coll(arg, prob_alpha):
+                        max_alpha = prob_alpha
+                    else:
+                        min_alpha = prob_alpha
+                
+                cf.real_update(arg, prob_alpha)
+                cf.detect_coll_and_change(arg)
+                step_alpha -= prob_alpha
+
+            
 
         # ----------------------------------------------------------------------------
         # Please, coding under the line!
+
 
     def update(self, arg):
         # Обновляем динамический фон
@@ -83,8 +110,6 @@ class Game_area:
 
 
     def blit_bg(self, arg):
-
-        #return
         ar = pygame.PixelArray(self.screen)
         r, g, b = [self.start_color[i] / 5 for i in range(3)]
         # Do some easy gradient effect.
@@ -98,11 +123,13 @@ class Game_area:
             ar[:, y] = (r, g, b)
         del ar
 
+
     def blit_rail(self, arg):
         x_pos = 0
         while(x_pos < arg.settings.screen_width):
             self.screen.blit(self.rail, (x_pos, arg.settings.ga_height - self.rail.get_rect().height+1))
             x_pos += self.rail.get_rect().width
+
 
     def blit(self, arg):
         # Собираем динамический фон
@@ -124,6 +151,7 @@ class Game_area:
 
         # Выводим game_area на главный экран
         arg.screen.blit(self.screen, self.rect)
+
 
 
     class Star():

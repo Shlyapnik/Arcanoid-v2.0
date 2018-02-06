@@ -17,7 +17,6 @@ class Arg:
         self.mouse_pos = None
         self.collided = False
 
-        self.time = 1
         self.additional_time = 0
         self.timer = None
         self.speed_count = 0
@@ -40,4 +39,7 @@ class Arg:
         self.prev_id_menu = 0
         self.state_flag = MenuS
 
-
+        self.ball = None
+        self.platform = None
+        self.blocks = None
+        self.nearest = None

@@ -133,8 +133,9 @@ class Ball(Item):
         self.alpha_velocity = self.settings.ball_velocity
 
         # Ставим на платформу
-        self.rect.bottom = arg.platform.rect.top
-        self.rect.centerx = arg.platform.rect.centerx
+        self.platform = arg.platform
+        self.rect.bottom = self.platform.rect.top
+        self.rect.centerx = self.platform.rect.centerx
         self.center = list(map(float, [self.rect.centerx, self.rect.centery]))
 
 
@@ -168,12 +169,15 @@ class Ball(Item):
                 fake_center[i] += self.velocity[i] * self.alpha_velocity * alpha
         
         result.centerx, result.centery = [int(item) for item in fake_center]
-        return [self.rect, result, self.radius]
+        return [self.center, fake_center, self.radius]
 
-    def update(self, arg, alpha):
+    def update(self, alpha):
+        if alpha != 1.0:
+            print("Ball {}".format(alpha))
+
         if not self.thrown:
-            self.rect.bottom = arg.platform.rect.top
-            self.rect.centerx = arg.platform.rect.centerx
+            self.rect.bottom = self.platform.rect.top
+            self.rect.centerx = self.platform.rect.centerx
             self.center = list(map(float, [self.rect.centerx, self.rect.centery]))
         else:
             for i in range(2):
