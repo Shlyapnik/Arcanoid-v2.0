@@ -59,6 +59,8 @@ def make_menus(arg):
     arg.menu_height = 200
     arg.menu.append(make_stop_menu(arg))
     arg.menu.append(make_settings_menu(arg))
+
+    arg.menu_height = 400
     arg.menu.append(make_unit_test_menu(arg))
 
 

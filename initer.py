@@ -50,7 +50,7 @@ class Initer:
         arg.blocks = Group()
 
         # Создаём Таймменеджер
-        arg.tm = Timemanager()
+        arg.tm = Timemanager(arg.settings.length_of_log)
 
         arg.tm.sing_up("be all", "af ch_ev", "check_event")
         arg.tm.sing_up("af ch_ev", "af up_state", "update_state")
@@ -58,7 +58,7 @@ class Initer:
         arg.tm.sing_up("af bliting", "af up_sing_ups", "update_sing_ups")
         arg.tm.sing_up("be all", "af up_sing_ups", "All")
 
-        arg.tm.sing_up("1", "2", "updating tables")
+        arg.tm.sing_up("1", "2", "updating score tables")
 
         # Создаём разнообразные панели для вывода резов
         self.make_tables(arg)

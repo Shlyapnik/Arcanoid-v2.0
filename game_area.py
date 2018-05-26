@@ -93,7 +93,7 @@ class Game_area:
             
 
         # ----------------------------------------------------------------------------
-        # Please, coding under the line!
+        # Please, coding above the line!
 
 
     def update(self, arg):

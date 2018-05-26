@@ -22,7 +22,10 @@ class Settings:
         self.max_lives = 1
         self.default_reward = 25
         self.catch_reward = 250
-        self.v_platform = 14
-        self.ball_velocity = 14
+
+        self.v_platform = 10
+        self.ball_velocity = 3
 
         self.fps = 200
+
+        self.length_of_log = 100

@@ -10,9 +10,13 @@ from settings import Settings
 from initer import Initer
 
 def print_debug(arg):
-    subscribers = ["All", "update_state", "bliting", "update_sing_ups", "updating tables"]
+    subscribers = ["All", "update_state", "bliting", "update_sing_ups", "updating score tables"]
     for subscriber in subscribers:
-        print(subscriber, arg.tm.get_sibscriber(subscriber, True), "%")
+        print(
+            "{}\n {:5.4f}%".format(
+                subscriber, arg.tm.get_sibscriber(subscriber, True)
+            )
+        )
     print()
 
 

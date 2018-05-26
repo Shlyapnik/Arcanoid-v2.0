@@ -18,11 +18,13 @@ def run_game():
         arg.tm.write_down("af up_state")
         gf.blit_screen(arg)
         arg.tm.write_down("af bliting")
+
         arg.tm.update_sing_ups()
         
         # ut.reduce_fps(arg)
         arg.tm.write_down("af up_sing_ups")
         # ut.print_debug(arg)
+
 
 if __name__ == '__main__':
     run_game()

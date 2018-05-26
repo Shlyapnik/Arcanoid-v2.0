@@ -38,6 +38,7 @@ class Stats:
         stats_db['max_score'] = self.max_count
         stats_db['cheat_mode'] = self.cheat_mode
         stats_db['visualising'] = self.visualising_flag
+        stats_db['training_flag'] = self.training_flag
 
         stats_db.close()
 
@@ -47,5 +48,6 @@ class Stats:
         self.max_count = stats_db.get('max_score', 0)
         self.cheat_mode = stats_db.get('cheat_mode', True)
         self.visualising_flag = stats_db.get('visualising', True)
+        self.training_flag = stats_db.get("training_flag", True)
 
         stats_db.close()

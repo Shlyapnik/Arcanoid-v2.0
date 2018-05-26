@@ -27,8 +27,8 @@ def check_for_coll(arg, alpha):
 
 
 def real_update(arg, alpha):
-    arg.ball.update(alpha)
     arg.platform.update(alpha)
+    arg.ball.update(alpha)
 
 
 def detect_coll_and_change(arg):

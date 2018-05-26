@@ -4,8 +4,8 @@ from queue import Queue
 from enums import avrM, avr_diffM, arv_dist_pointM
 
 class Timemanager:
-    def __init__(self):
-        self.length_of_log = 100
+    def __init__(self, length=100):
+        self.length_of_log = length
         self.storage = Queue()
 
         self.sing_ups_size = 0

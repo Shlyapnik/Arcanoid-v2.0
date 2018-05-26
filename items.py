@@ -156,13 +156,13 @@ class Ball(Item):
         #pygame.draw.circle(self.screen, self.color_cirle, self.rect.center, self.radius, 2)
 
 
-    def fake_update(self, arg, alpha):
+    def fake_update(self, alpha):
         result = copy.copy(self.rect)
-        fake_center = copy.copy(self.rect)
+        fake_center = copy.copy(self.center)
 
         if not self.thrown:
-            result.bottom = arg.platform.rect.top
-            result.centerx = arg.platform.rect.centerx
+            result.bottom = self.platform.rect.top
+            result.centerx = self.platform.rect.centerx
             fake_center = list(map(float, [self.rect.centerx, self.rect.centery]))
         else:
             for i in range(2):
@@ -192,6 +192,8 @@ class Ball(Item):
             self.velocity = [miss*4, -1]
             v_mod = sum(self.velocity[i]**2 for i in range(2))**0.5
             self.velocity = [self.velocity[i]/v_mod for i in range(2)]
+
+            self.rect.bottom = self.platform.rect.top - 2
 
     def restart(self, arg):
         self.thrown = False
