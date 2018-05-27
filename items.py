@@ -219,8 +219,8 @@ class Ball(Item):
         return [self.center, fake_center, self.radius]
 
     def update(self, alpha):
-        if alpha != 1.0:
-            print("Ball {}".format(alpha))
+        # if alpha != 1.0:
+        #     print("Ball {}".format(alpha))
 
         if not self.thrown:
             self.rect.bottom = self.platform.rect.top

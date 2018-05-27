@@ -127,8 +127,8 @@ def make_test4(arg):
     result = UnitTest()
 
     result.description = "Throgh 2"
-    result.ball_pos = (150, 210)
-    result.alpha_velocity = 40
+    result.ball_pos = (150, 410)
+    result.alpha_velocity = 100
     result.ball_velocity = [0, -1]
 
     result.blocks.append((0, 0))

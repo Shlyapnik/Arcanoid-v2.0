@@ -77,8 +77,7 @@ def check_events(arg):
 
             elif event.type == pygame.KEYUP:
                 check_keyup_menu_events(event, arg)
-
-
+                
 
 def collide_circle_rect(circle, rect, radius):
     coll_point = [-1, -1]
@@ -181,7 +180,7 @@ def new_game(arg):
 
 
 def next_level(arg):
-    print(1)
+    # print(1)
     restart(arg)
     arg.stats.increase_difficulty(arg)
 

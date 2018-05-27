@@ -24,7 +24,7 @@ class Settings:
         self.catch_reward = 250
 
         self.v_platform = 7
-        self.ball_velocity = 3
+        self.ball_velocity = 10
 
         self.fps = 15
 

@@ -90,8 +90,13 @@ class Game_area:
                 cf.detect_coll_and_change(arg, eps)
                 step_alpha -= prob_alpha
 
+        # Проверки на конец игры
+        if len(arg.blocks) == 0:
+            arg.next_level(arg)
+
         if arg.ball.center[1] - arg.radius > arg.game_area.rect.height:
             arg.wasted(arg)
+
 
         # ----------------------------------------------------------------------------
         # Please, coding above the line!
@@ -102,7 +107,7 @@ class Game_area:
         if arg.stats.visualising_flag:
             self.update_background(arg)
 
-        # Обновлем Меню либо игровое поле
+        # Обновлем меню либо игровое поле
         if arg.state_flag == GameS:
             self.request_move(arg)
             self.update_dynamic_objects(arg)
