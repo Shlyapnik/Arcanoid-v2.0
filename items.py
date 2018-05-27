@@ -8,6 +8,7 @@ from pygame.sprite import Sprite, spritecollide
 import game_functions as gf
 
 
+
 class Item(Sprite):
     def __init__(self, arg):
         super(Item, self).__init__()
@@ -70,6 +71,8 @@ class Platform(Item):
     def __init__(self, arg):
         Item.__init__(self, arg)
 
+        self.area_rect = arg.game_area.rect
+
         self.rect.top = arg.settings.ga_height - self.rect.height - 10
         self.rect.centerx = self.screen_rect.width//2
         self.center = list(map(float, [self.rect.centerx, self.rect.centery]))
@@ -79,28 +82,72 @@ class Platform(Item):
 
         self.velocity = arg.settings.v_platform
 
+        self.freeze_move = [-1, -1]
+        self.freeze_count = 0
+        self.default_freeze_count = 2
+
+    def link_with_ball(self, arg):
+        self.ball = arg.ball
 
     def fake_update(self, alpha):
         result = copy.copy(self.rect)
         fake_center = copy.copy(self.center)
 
-        if self.moving_right:
-            fake_center[0] += self.velocity * alpha
-        elif self.moving_left:
-            fake_center[0] -= self.velocity * alpha
+        if not self.is_freezing():
+            if self.moving_right:
+                fake_center[0] += self.velocity * alpha
+            elif self.moving_left:
+                fake_center[0] -= self.velocity * alpha
 
         result.centerx, result.centery = [int(item) for item in fake_center]
         return [self.rect, result]
 
 
     def update(self, alpha):
-        if self.moving_right:
-            self.center[0] += self.velocity * alpha
-        elif self.moving_left:
-            self.center[0] -= self.velocity * alpha
+        # cur_rect, next_rect = self.fake_update(alpha)
+        # cur_center, next_center, radius = self.ball.fake_update(alpha)
+
+        # flag_coll = False
+        # for circle in [cur_center, next_center]:
+        #     for rect in [cur_rect, next_rect]:
+        #         if gf.collide_circle_rect(circle, rect, radius) != [-1, -1]:
+        #             flag_coll = True
+
+        # print(flag_coll, self.ball.thrown)
+        # if not flag_coll or not self.ball.thrown:
+        #     if self.moving_right:
+        #         self.center[0] += self.velocity * alpha
+        #     elif self.moving_left:
+        #         self.center[0] -= self.velocity * alpha
+
+        #     self.sync()
+        if not self.is_freezing():
+            if self.moving_right:
+                self.center[0] += self.velocity * alpha
+            elif self.moving_left:
+                self.center[0] -= self.velocity * alpha
+
+            self.sync()
+
+        if self.rect.left < 0:
+            self.center[0] -= self.rect.left
+        if self.rect.right > self.area_rect.width:
+            self.center[0] += self.area_rect.width - self.rect.right
 
         self.sync()
 
+        
+        self.unfreeze_one()
+
+    def freeze(self):
+        self.freeze_count = self.default_freeze_count
+
+    def unfreeze_one(self):
+        if self.freeze_count > 0:
+            self.freeze_count -= 1
+
+    def is_freezing(self):
+        return self.freeze_count != 0
 
     def make_intersected(self, arg):
         sel1 = param.left_side < self.rect.right

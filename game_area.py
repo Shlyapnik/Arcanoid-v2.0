@@ -3,6 +3,7 @@ import random
 import time
 
 import collision_functions as cf
+import game_functions as gf
 
 from pygame.compat import xrange_
 from enums import GameS, MenuS
@@ -65,7 +66,7 @@ class Game_area:
     def update_dynamic_objects(self, arg):
         # Нужно вот здесь реализовывать коллизии
         
-        eps = 0.0001
+        eps = 0.01
         step_alpha = 1.0
 
         cf.keep_nearest_blocks(arg)
@@ -73,7 +74,6 @@ class Game_area:
         # Проверяем не можем ли мы сразу шагнуть на единичку
         if not cf.check_for_coll(arg, 1.0):
             cf.real_update(arg, 1.0)
-            return
         else:
             # Начинаем бинарный поиск
             while step_alpha > eps:
@@ -86,11 +86,12 @@ class Game_area:
                     else:
                         min_alpha = prob_alpha
                 
-                cf.real_update(arg, prob_alpha)
-                cf.detect_coll_and_change(arg)
+                cf.real_update(arg, min_alpha)
+                cf.detect_coll_and_change(arg, eps)
                 step_alpha -= prob_alpha
 
-            
+        if arg.ball.center[1] - arg.radius > arg.game_area.rect.height:
+            arg.wasted(arg)
 
         # ----------------------------------------------------------------------------
         # Please, coding above the line!

@@ -62,6 +62,7 @@ def get_tests(arg):
     result.append(make_test2(arg))
     result.append(make_test3(arg))
     result.append(make_test4(arg))
+    result.append(make_test5(arg))
 
     return result
 
@@ -131,6 +132,24 @@ def make_test4(arg):
     result.ball_velocity = [0, -1]
 
     result.blocks.append((0, 0))
+
+    result.blocks.append((100, 100))
+    
+
+    result.platform_pos = 40    
+
+    return result
+
+def make_test5(arg):
+    result = UnitTest()
+
+    result.description = "Size platform"
+    result.ball_pos = (
+        arg.game_area.rect.width - arg.radius * 2,
+        arg.game_area.rect.height - arg.radius * 1 - 10 - 4
+    )
+    result.alpha_velocity = 3
+    result.ball_velocity = [1, 0]
 
     result.blocks.append((100, 100))
     

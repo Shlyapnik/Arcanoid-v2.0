@@ -33,9 +33,6 @@ class Initer:
         arg.population = Population(arg)
         arg.population.load_prev_session(arg)
 
-        # Создаём меню
-        make_menus(arg)
-
         # Создаём объект платформы
         arg.image_name = 'images/new/platform 120x20.png'
         arg.platform = Platform(arg)
@@ -44,6 +41,10 @@ class Initer:
         arg.radius = 10
         arg.image_name = 'images/new/ball_aparture 20x20.png'
         arg.ball = Ball(arg)
+        arg.platform.link_with_ball(arg)
+
+        # Создаём меню
+        make_menus(arg)
 
         # Создаём блоки для ломания
         arg.image_name = 'images/new/block_'

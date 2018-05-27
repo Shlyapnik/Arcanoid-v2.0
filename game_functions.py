@@ -80,29 +80,30 @@ def check_events(arg):
 
 
 
-def collide_circle_rect(a, b):
-    b.rect.centerx, b.rect.centery = b.center
-    sol = [0, 0]
+def collide_circle_rect(circle, rect, radius):
+    coll_point = [-1, -1]
 
-    if b.rect.left < a.center[0] < b.rect.right:
-        if math.fabs(a.center[1] - b.rect.top) < a.radius:
-            sol = [a.center[0], b.rect.top]
-        elif math.fabs(a.center[1] - b.rect.bottom) < a.radius:
-            sol = [a.center[0], b.rect.bottom]
-    elif b.rect.top < a.center[1] < b.rect.bottom:
-        if math.fabs(a.center[0] - b.rect.left) < a.radius:
-            sol = [b.rect.left, a.center[1]]
-        elif math.fabs(a.center[0] - b.rect.right) < a.radius:
-            sol = [b.rect.right, a.center[1]]
+    if rect.left < circle[0] < rect.right:
+        if math.fabs(circle[1] - rect.top) < radius:
+            coll_point = [circle[0], rect.top]
+        elif math.fabs(circle[1] - rect.bottom) < radius:
+            coll_point = [circle[0], rect.bottom]
+    elif rect.top < circle[1] < rect.bottom:
+        if math.fabs(circle[0] - rect.left) < radius:
+            coll_point = [rect.left, circle[1]]
+        elif math.fabs(circle[0] - rect.right) < radius:
+            coll_point = [rect.right, circle[1]]
     else:
-        temp_func = lambda a, point: True if ((a.center[0] - point[0])**2 + (a.center[1] - point[1])**2) ** 0.5 < a.radius else False
+        temp_func = lambda circle, point: True if (
+            ((circle[0] - point[0])**2 + (circle[1] - point[1])**2) ** 0.5 < radius 
+        ) else False
 
-        for side_1 in [b.rect.left, b.rect.right]:
-            for side_2 in [b.rect.top, b.rect.bottom]:
-                if temp_func(a, (side_1, side_2)):
-                    sol = [side_1, side_2]
+        for side_1 in [rect.left, rect.right]:
+            for side_2 in [rect.top, rect.bottom]:
+                if temp_func(circle, (side_1, side_2)):
+                    coll_point = [side_1, side_2]
 
-    return sol
+    return coll_point
 
 
 def blit_screen(arg):
@@ -174,6 +175,7 @@ def restart(arg):
 
 
 def new_game(arg):
+    # arg.wasted = False
     restart(arg)
     arg.stats.restart(arg)
 
@@ -192,10 +194,7 @@ def wasted(arg):
         arg.population.end_game(arg)
         new_game(arg)
     else:
-        if arg.stats.lives == 0:
-            new_game(arg)
-        else:
-            next_level(arg)
+        new_game(arg)
 
 
 
