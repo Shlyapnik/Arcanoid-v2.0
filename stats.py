@@ -1,5 +1,6 @@
 import pygame
 import shelve
+import os
 
 class Stats:
     def __init__(self, arg):
@@ -32,7 +33,12 @@ class Stats:
         self.level += 1
         arg.ball.alpha_velocity *= 1.2
 
+    def check_and_correct_db(self):
+        if not os.path.exists("db/"):
+            os.mkdir("db")
+
     def save_cur_session(self, arg):
+        self.check_and_correct_db
         stats_db = shelve.open('db/stats_db')
 
         stats_db['max_score'] = self.max_count
@@ -43,6 +49,7 @@ class Stats:
         stats_db.close()
 
     def load_prev_session(self, arg):
+        self.check_and_correct_db()
         stats_db = shelve.open('db/stats_db')
 
         self.max_count = stats_db.get('max_score', 0)
